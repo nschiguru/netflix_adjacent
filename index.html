@@ -9,7 +9,7 @@
 <body>
     <header>
         <div class="container">
-            <h1 class="logo">NETFLIX</h1>
+            <h1 class="logo">NETFLIX ADJACENT</h1>
             <div class="user-info">
                 <span id="userDisplay">Guest</span>
             </div>
@@ -28,27 +28,30 @@
             <div class="movie-grid">
                 <div class="movie-card" onclick="playMovie('movie1')">
                     <div class="movie-thumbnail">
+                        <img src = "thumbnails/movie1.png" alt="Movie 1 Thumbnail">
                         <h3>Movie 1</h3>
                     </div>
-                    <p>Action Thriller</p>
+                    <p>The Bird Movie</p>
                     <div class="progress-bar">
                         <div id="progress-movie1" class="progress"></div>
                     </div>
                 </div>
                 <div class="movie-card" onclick="playMovie('movie2')">
                     <div class="movie-thumbnail">
+                        <img src = "thumbnails/movie2.png" alt="Movie 2 Thumbnail">
                         <h3>Movie 2</h3>
                     </div>
-                    <p>Drama</p>
+                    <p>Windmill Watch</p>
                     <div class="progress-bar">
                         <div id="progress-movie2" class="progress"></div>
                     </div>
                 </div>
                 <div class="movie-card" onclick="playMovie('movie3')">
                     <div class="movie-thumbnail">
+                        <img src = "thumbnails/movie3.png" alt="Movie 3 Thumbnail">
                         <h3>Movie 3</h3>
                     </div>
-                    <p>Comedy</p>
+                    <p>Chill City</p>
                     <div class="progress-bar">
                         <div id="progress-movie3" class="progress"></div>
                     </div>
@@ -62,7 +65,6 @@
             <video id="videoPlayer" controls width="100%">
                 Your browser does not support the video tag.
             </video>
-            <button onclick="saveProgress()" class="save-btn">Save Progress</button>
         </section>
     </main>
 

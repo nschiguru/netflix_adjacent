@@ -80,11 +80,49 @@ async function playMovie(movieId) {
     }
 }
 
-function backToMovies() {
+async function backToMovies() {
+    const videoPlayer = document.getElementById('videoPlayer');
+
+
+    // Prevent saving if no movie is currently playing
+    if (!currentMovieId || !currentUser || !videoPlayer.duration) {
+        document.getElementById('playerSection').style.display = 'none';
+        document.getElementById('moviesSection').style.display = 'block';
+        videoPlayer.pause();
+        videoPlayer.src = '';
+        return;
+    }
+
+    const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'saveProgress',
+                userId: currentUser,
+                movieId: currentMovieId,
+                progress: progress,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        if(!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        alert('Progress saved successfully!');
+    } catch (error) {
+        alert('Error saving progress: ' + error.message);
+        console.error('Error saving the progress: ' + error);
+    }
+
     document.getElementById('playerSection').style.display = 'none';
     document.getElementById('moviesSection').style.display = 'block';
     
-    const videoPlayer = document.getElementById('videoPlayer');
     videoPlayer.pause();
     videoPlayer.src = '';
     

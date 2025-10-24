@@ -29,9 +29,12 @@ header .container {
 }
 
 .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
     color: #E50914;
-    font-size: 2em;
-    font-weight: bold;
+    font-size: 2.5em;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .user-info {
@@ -85,21 +88,27 @@ main {
 
 .movie-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    justify-items: center;
+    padding: 50px;
 }
 
 .movie-card {
     background-color: #222;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
+    width: 280px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .movie-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(229, 9, 20, 0.5);
+    transform: scale(1.06);
+    box-shadow: 0 10px 20px rgba(229, 9, 20, 0.4);
 }
 
 .movie-thumbnail {
