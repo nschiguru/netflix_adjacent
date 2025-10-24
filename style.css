@@ -1,0 +1,160 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #141414;
+    color: #fff;
+}
+
+header {
+    background-color: #000;
+    padding: 20px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: #E50914;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.user-info {
+    font-size: 1em;
+}
+
+main {
+    margin-top: 40px;
+}
+
+.login-section {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 40px;
+    background-color: #222;
+    border-radius: 10px;
+}
+
+.login-section h2 {
+    margin-bottom: 20px;
+}
+
+.login-section input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.login-section button, .save-btn, .back-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #E50914;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-section button:hover, .save-btn:hover, .back-btn:hover {
+    background-color: #f40612;
+}
+
+.movies-section h2 {
+    margin-bottom: 30px;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.movie-card {
+    background-color: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(229, 9, 20, 0.5);
+}
+
+.movie-thumbnail {
+    height: 200px;
+    background: linear-gradient(135deg, #E50914, #831010);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.movie-thumbnail h3 {
+    font-size: 1.5em;
+}
+
+.movie-card p {
+    padding: 15px;
+}
+
+.progress-bar {
+    height: 5px;
+    background-color: #444;
+    margin: 0 15px 15px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background-color: #E50914;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.player-section {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.player-section h2 {
+    margin-bottom: 20px;
+}
+
+.player-section video {
+    background-color: #000;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    width: auto;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+.save-btn {
+    width: auto;
+    padding: 10px 30px;
+}

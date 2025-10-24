@@ -6,27 +6,52 @@ import os
 s3_client = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('NetflixUserData')
-
 BUCKET_NAME = 'netflix-clone-videos-nschiguru'
 
 def lambda_handler(event, context):
+    # Handle OPTIONS request for CORS preflight
+    if event.get('requestContext', {}).get('http', {}).get('method') == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
+            },
+            'body': ''
+        }
+    
     try:
-        action = event.get('action')
+        # Parse the body if it's a string
+        if isinstance(event.get('body'), str):
+            body = json.loads(event['body'])
+        else:
+            body = event.get('body', {})
+        
+        action = body.get('action')
         
         if action == 'getVideo':
-            return get_video_url(event)
+            return get_video_url(body)
         elif action == 'saveProgress':
-            return save_user_progress(event)
+            return save_user_progress(body)
         elif action == 'getProgress':
-            return get_user_progress(event)
+            return get_user_progress(body)
         else:
             return {
                 'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
+                },
                 'body': json.dumps({'error': 'Invalid action'})
             }
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({'error': str(e)})
         }
 
@@ -36,6 +61,10 @@ def get_video_url(event):
     if not movie_id:
         return {
             'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({'error': 'movieId is required'})
         }
     
@@ -69,6 +98,10 @@ def save_user_progress(event):
     if not all([user_id, movie_id, progress is not None]):
         return {
             'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({'error': 'userId, movieId, and progress are required'})
         }
     
@@ -97,6 +130,10 @@ def get_user_progress(event):
     if not all([user_id, movie_id]):
         return {
             'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            },
             'body': json.dumps({'error': 'userId and movieId are required'})
         }
     

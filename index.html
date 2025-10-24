@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">NETFLIX</h1>
+            <div class="user-info">
+                <span id="userDisplay">Guest</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="login-section" id="loginSection">
+            <h2>Sign In</h2>
+            <input type="text" id="userId" placeholder="Enter User ID" value="user123">
+            <button onclick="login()">Login</button>
+        </section>
+
+        <section class="movies-section" id="moviesSection" style="display: none;">
+            <h2>Available Movies</h2>
+            <div class="movie-grid">
+                <div class="movie-card" onclick="playMovie('movie1')">
+                    <div class="movie-thumbnail">
+                        <h3>Movie 1</h3>
+                    </div>
+                    <p>Action Thriller</p>
+                    <div class="progress-bar">
+                        <div id="progress-movie1" class="progress"></div>
+                    </div>
+                </div>
+                <div class="movie-card" onclick="playMovie('movie2')">
+                    <div class="movie-thumbnail">
+                        <h3>Movie 2</h3>
+                    </div>
+                    <p>Drama</p>
+                    <div class="progress-bar">
+                        <div id="progress-movie2" class="progress"></div>
+                    </div>
+                </div>
+                <div class="movie-card" onclick="playMovie('movie3')">
+                    <div class="movie-thumbnail">
+                        <h3>Movie 3</h3>
+                    </div>
+                    <p>Comedy</p>
+                    <div class="progress-bar">
+                        <div id="progress-movie3" class="progress"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="player-section" id="playerSection" style="display: none;">
+            <button onclick="backToMovies()" class="back-btn">← Back to Movies</button>
+            <h2 id="currentMovie">Now Playing</h2>
+            <video id="videoPlayer" controls width="100%">
+                Your browser does not support the video tag.
+            </video>
+            <button onclick="saveProgress()" class="save-btn">Save Progress</button>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
