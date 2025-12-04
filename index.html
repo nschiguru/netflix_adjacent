@@ -15,6 +15,8 @@
             </div>
         </div>
     </header>
+
+
     <main class="container">
         <section class="login-section" id="loginSection">
             <h2>IAM Authentication Required</h2>
@@ -27,7 +29,14 @@
             <p style="margin-top: 20px; color: #666; font-size: 0.85em;">
                 ⓘ You must have the "NetflixAccessPolicy" attached to your IAM user
             </p>
+            <!-- Development Bypass Button DELETE THIS LATER -->
+            <button id="devBypassBtn" onclick="debugBypassLogin()" style="margin-top:15px; background:#555;">
+                Dev: Bypass Login
+            </button>
+
         </section>
+
+        <!-- ===================== MOVIES SECTION ===================== -->
         <section class="movies-section" id="moviesSection" style="display: none;">
             <h2>Available Movies</h2>
             <div class="movie-grid">
@@ -63,13 +72,48 @@
                 </div>
             </div>
         </section>
+
+
+        <!-- ===================== USER UPLOADED MOVIES ===================== -->
+        <section class="user-movies-section" id="userMoviesSection" style="display:none;">
+            <h2 class="user-movies-title">Your Uploaded Movies</h2>
+
+            <!-- Single Upload Button -->
+            <button class="open-upload-btn" onclick="openUploadPopup()">Upload Movie</button>
+
+            <!-- Upload Popup -->
+            <div id="uploadModal" class="upload-modal">
+                <div class="upload-modal-content">
+                    <span class="close-upload" onclick="closeUploadPopup()">&times;</span>
+
+                    <h2>Select a Movie to Upload</h2>
+
+                    <input type="file" id="popupFileInput" accept="video/mp4">
+                    <button class="upload-btn" onclick="uploadMovieFromPopup()">Upload</button>
+                </div>
+            </div>
+
+            <!-- Grid showing previously uploaded movies -->
+            <div id="userMovieGrid" class="movie-grid"></div>
+        </section>
+
+        <!-- ===================== VIDEO PLAYER SECTION ===================== -->
         <section class="player-section" id="playerSection" style="display: none;">
             <button onclick="backToMovies()" class="back-btn">← Back to Movies</button>
             <h2 id="currentMovie">Now Playing</h2>
-            <video id="videoPlayer" controls width="100%">
+
+            <video id="videoPlayer" controls>
                 Your browser does not support the video tag.
             </video>
+
+            <div id="movieDescription" class="movie-description">
+                <p id="descriptionText"></p>
+                <button id="ttsButton" onclick="playTextToSpeech()" style="display:none;">🔊 Listen</button>
+            </div>
+            
         </section>
+
+
     </main>
     <script src="script.js"></script>
 </body>

@@ -167,3 +167,98 @@ main {
     width: auto;
     padding: 10px 30px;
 }
+/* ===== USER MOVIES ===== */
+
+.user-movies-title {
+    margin-bottom: 10px;
+}
+
+.open-upload-btn {
+    padding: 12px 20px;
+    background: #E50914;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* ===== UPLOAD POPUP ===== */
+
+.upload-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000; /* Make sure modal is on top */
+}
+
+.upload-modal-content {
+    background: #222;
+    width: 400px;
+    padding: 30px;
+    border-radius: 10px;
+    margin: 120px auto;
+    position: relative;
+    text-align: center;
+}
+
+.close-upload {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    color: #fff;
+}
+
+.upload-modal-content input[type="file"] {
+    margin: 20px 0;
+    width: 100%;
+}
+
+.upload-btn {
+    background-color: #E50914; /* Netflix red */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-btn:hover {
+    background-color: #f40612;
+}
+
+/* ===== PLAYER ===== */
+
+.player-section video {
+    width: 100%;
+    border-radius: 12px;
+    background: #000;
+}
+
+.back-btn {
+    padding: 10px 20px;
+    background: #E50914;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+// dev button stuff delete
+#devBypassBtn {
+    width: auto;
+    padding: 10px 20px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+#devBypassBtn:hover {
+    background-color: #777;
+}

@@ -6,6 +6,19 @@ let currentUserId = null;
 let currentMovieId = null;
 let isAuthenticated = false;
 
+const movieDescriptions = {
+    "movie1": "The Bird Movie is a heartwarming story about a bird perched on a tree branch, singing melodious tunes.",
+    "movie2": "Windmill Watch shows the serene beauty of windmills in a picturesque countryside setting, beautiful colors of the setting sun.",
+    "movie3": "Chill City is a relaxing journey through a city showing the movement as people go about their daily lives, with calming background music."
+};
+
+const movieTitles = {
+    "movie1": "The Bird Movie",
+    "movie2": "Windmill Watch",
+    "movie3": "Chill City"
+};
+
+//-------------------------------- USER AUTHENTICATION -------------------------------
 async function login() {
     console.log('Login function called'); // Debug
     
@@ -70,8 +83,10 @@ async function login() {
             document.getElementById('userDisplay').textContent = currentUser;
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('moviesSection').style.display = 'block';
+            document.getElementById('userMoviesSection').style.display = 'block';
             
             loadAllProgress();
+            getUserMovies();
         } else {
             // Authentication failed
             alert('Authentication Failed: ' + (data.error || 'Invalid credentials or insufficient privileges'));
@@ -86,7 +101,9 @@ async function login() {
     }
 }
 
-// Rest of your existing code...
+
+
+//-------------------------------- MOVIE PROGRESS TRACKING -------------------------------
 async function loadAllProgress() {
     if (!isAuthenticated) {
         alert('Please login first');
@@ -119,6 +136,8 @@ async function loadAllProgress() {
     }
 }
 
+
+//-------------------------------- PLAYING MOVIE -------------------------------
 async function playMovie(movieId) {
     if (!isAuthenticated) {
         alert('Please login first');
@@ -144,12 +163,25 @@ async function playMovie(movieId) {
         
         if (data.videoUrl) {
             document.getElementById('moviesSection').style.display = 'none';
+            document.getElementById('userMoviesSection').style.display = 'none'; 
             document.getElementById('playerSection').style.display = 'block';
-            document.getElementById('currentMovie').textContent = `Now Playing: ${movieId}`;
+            document.getElementById('currentMovie').textContent = `Now Playing: ${movieTitles[movieId]}`;
             
             const videoPlayer = document.getElementById('videoPlayer');
             videoPlayer.src = data.videoUrl;
             videoPlayer.play();
+
+            // Set description and show TTS button
+            const descText = document.getElementById('descriptionText');
+            const ttsButton = document.getElementById('ttsButton');
+
+            if (movieDescriptions[movieId]) {
+                descText.textContent = movieDescriptions[movieId];
+                ttsButton.style.display = 'inline-block';
+            } else {
+                descText.textContent = '';
+                ttsButton.style.display = 'none';
+            }
         }
     } catch (error) {
         alert('Error loading video: ' + error.message);
@@ -157,6 +189,19 @@ async function playMovie(movieId) {
     }
 }
 
+// For text-to-speech (AWS Polly integration placeholder)
+function playTextToSpeech() {
+    if (!currentMovieId || !movieDescriptions[currentMovieId]) return;
+
+    const text = movieDescriptions[currentMovieId];
+    
+    // Here you can integrate AWS Polly API to play the TTS audio
+    // For now, we can use the Web Speech API as a placeholder
+    const utterance = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(utterance);
+}
+
+// button functionality to go back to movies and save progress
 async function backToMovies() {
     const videoPlayer = document.getElementById('videoPlayer');
 
@@ -164,6 +209,7 @@ async function backToMovies() {
     if (!currentMovieId || !currentUserId || !videoPlayer.duration) {
         document.getElementById('playerSection').style.display = 'none';
         document.getElementById('moviesSection').style.display = 'block';
+        document.getElementById('userMoviesSection').style.display = 'block';
         videoPlayer.pause();
         videoPlayer.src = '';
         return;
@@ -198,6 +244,7 @@ async function backToMovies() {
 
     document.getElementById('playerSection').style.display = 'none';
     document.getElementById('moviesSection').style.display = 'block';
+    document.getElementById('userMoviesSection').style.display = 'block';
     
     videoPlayer.pause();
     videoPlayer.src = '';
@@ -205,6 +252,7 @@ async function backToMovies() {
     loadAllProgress();
 }
 
+//saving video progress logic
 async function saveProgress() {
     if (!isAuthenticated) {
         alert('Please login first');
@@ -234,4 +282,122 @@ async function saveProgress() {
         alert('Error saving progress: ' + error.message);
         console.error(error);
     }
+}
+
+//-------------------------------- USER UPLOADED MOVIES -------------------------------
+function openUploadPopup() {
+    document.getElementById("uploadModal").style.display = "block";
+}
+function closeUploadPopup() {
+    document.getElementById("uploadModal").style.display = "none";
+}
+
+async function uploadMovieFromPopup() {
+    const file = document.getElementById("popupFileInput").files[0];
+
+    if (!file) {
+        alert("Select a file first");
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "requestUploadUrl",
+                userId: currentUserId,
+                fileName: file.name
+            })
+        });
+
+        const result = await response.json();
+        const data = result.body ? JSON.parse(result.body) : result;
+
+        await fetch(data.uploadUrl, {
+            method: "PUT",
+            headers: { "Content-Type": "video/mp4" },
+            body: file
+        });
+
+        closeUploadPopup();
+        getUserMovies();
+    } catch (err) {
+        alert("Upload failed");
+    }
+}
+
+async function getUserMovies() {
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "listUserMovies",
+                userId: currentUserId
+            })
+        });
+
+        const result = await response.json();
+        const data = result.body ? JSON.parse(result.body) : result;
+
+        const grid = document.getElementById("userMovieGrid");
+        grid.innerHTML = "";
+
+        if (!data.movies || data.movies.length === 0) {
+            grid.innerHTML = "<p>No uploaded movies yet.</p>";
+            return;
+        }
+
+        data.movies.forEach(movie => {
+            const el = document.createElement("div");
+            el.className = "movie-card";
+            el.onclick = () => playUserMovie(movie.videoUrl, movie.movieId);
+
+            el.innerHTML = `
+                <div class="movie-thumbnail">
+                    <h3>${movie.movieId}</h3>
+                </div>
+                <p>Your Uploaded Movie</p>
+            `;
+
+            grid.appendChild(el);
+        });
+
+    } catch (err) {
+        console.error("User movie load error:", err);
+    }
+}
+
+function playUserMovie(videoUrl, movieId) {
+    currentMovieId = movieId;
+
+    // Hide home sections
+    document.getElementById('moviesSection').style.display = 'none';
+    document.getElementById('userMoviesSection').style.display = 'none'; // <-- hide user uploads
+    document.getElementById('playerSection').style.display = 'block';
+    
+    document.getElementById('currentMovie').textContent = `Now Playing: ${movieId}`;
+
+    const videoPlayer = document.getElementById('videoPlayer');
+    videoPlayer.src = videoUrl;
+    videoPlayer.play();
+}
+
+
+
+
+//dev bypass button DELETE AFTER TESTING
+function debugBypassLogin() {
+    isAuthenticated = true;
+    currentUser = "devUser";
+    currentUserId = "dev-user-123";
+
+    document.getElementById('userDisplay').textContent = currentUser;
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('moviesSection').style.display = 'block';
+    document.getElementById('userMoviesSection').style.display = 'block';
+
+    loadAllProgress();
+    loadUserVideos(); // New function in your updated code
 }
