@@ -5,10 +5,12 @@ import os
 from botocore.exceptions import ClientError
 
 s3_client = boto3.client('s3')
+polly_client = boto3.client('polly')
 dynamodb = boto3.resource('dynamodb')
 iam_client = boto3.client('iam')
 table = dynamodb.Table('NetflixUserData')
 BUCKET_NAME = 'netflix-clone-videos-nschiguru'
+TTS_BUCKET = BUCKET_NAME
 
 def lambda_handler(event, context):
     # CORS headers
@@ -62,6 +64,8 @@ def lambda_handler(event, context):
             return save_user_progress(body, cors_headers)
         elif action == 'getProgress':
             return get_user_progress(body, cors_headers)
+        elif action == 'textToSpeech':
+            return generate_tts_audio(body, cors_headers)
         else:
             return {
                 'statusCode': 400,
@@ -245,3 +249,55 @@ def get_user_progress(body, cors_headers):
         'headers': cors_headers,
         'body': json.dumps(item if item else {'watchProgress': 0})
     }
+
+
+def generate_tts_audio(body, cors_headers):
+    text = body.get('text')
+    movie_id = body.get('movieId')
+
+    if not text or not movie_id:
+        return {
+            'statusCode': 400,
+            'headers': cors_headers,
+            'body': json.dumps({'error': 'text and movieId are required'})
+        }
+
+    try:
+        # Generate audio with AWS Polly
+        polly_response = polly_client.synthesize_speech(
+            Text=text,
+            OutputFormat='mp3',
+            VoiceId='Joanna'  # change if you want
+        )
+
+        audio_bytes = polly_response['AudioStream'].read()
+        tts_key = f"tts/{movie_id}.mp3"
+
+        # Upload MP3 to S3
+        s3_client.put_object(
+            Bucket=TTS_BUCKET,
+            Key=tts_key,
+            Body=audio_bytes,
+            ContentType='audio/mpeg'
+        )
+
+        # Create presigned URL
+        audio_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': TTS_BUCKET, 'Key': tts_key},
+            ExpiresIn=3600
+        )
+
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps({'audioUrl': audio_url})
+        }
+
+    except Exception as e:
+        print("Polly error:", e)
+        return {
+            'statusCode': 500,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }

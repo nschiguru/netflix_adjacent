@@ -171,17 +171,15 @@ async function playMovie(movieId) {
             videoPlayer.src = data.videoUrl;
             videoPlayer.play();
 
-            // Set description and show TTS button
+            // Set description (no TTS button)
             const descText = document.getElementById('descriptionText');
-            const ttsButton = document.getElementById('ttsButton');
 
             if (movieDescriptions[movieId]) {
                 descText.textContent = movieDescriptions[movieId];
-                ttsButton.style.display = 'inline-block';
             } else {
                 descText.textContent = '';
-                ttsButton.style.display = 'none';
             }
+
         }
     } catch (error) {
         alert('Error loading video: ' + error.message);
@@ -190,16 +188,54 @@ async function playMovie(movieId) {
 }
 
 // For text-to-speech (AWS Polly integration placeholder)
-function playTextToSpeech() {
-    if (!currentMovieId || !movieDescriptions[currentMovieId]) return;
+// function playTextToSpeech() {
+//     if (!currentMovieId || !movieDescriptions[currentMovieId]) return;
 
-    const text = movieDescriptions[currentMovieId];
+//     const text = movieDescriptions[currentMovieId];
     
-    // Here you can integrate AWS Polly API to play the TTS audio
-    // For now, we can use the Web Speech API as a placeholder
-    const utterance = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(utterance);
+//     // Here you can integrate AWS Polly API to play the TTS audio
+//     // For now, we can use the Web Speech API as a placeholder
+//     const utterance = new SpeechSynthesisUtterance(text);
+//     speechSynthesis.speak(utterance);
+// }
+
+async function requestTTS() {
+    if (!currentMovieId || !movieDescriptions[currentMovieId]) {
+        alert("No description available.");
+        return;
+    }
+
+    const textToSpeak = movieDescriptions[currentMovieId];
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "tts",
+                text: textToSpeak
+            })
+        });
+
+        const result = await response.json();
+        const data = result.body ? JSON.parse(result.body) : result;
+
+        if (!data.audioUrl) {
+            alert("Could not generate TTS audio.");
+            return;
+        }
+
+        // Play audio
+        const audio = new Audio(data.audioUrl);
+        audio.play();
+
+    } catch (err) {
+        console.error(err);
+        alert("TTS Request Failed");
+    }
 }
+
+
 
 // button functionality to go back to movies and save progress
 async function backToMovies() {
