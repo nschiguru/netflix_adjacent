@@ -171,15 +171,17 @@ async function playMovie(movieId) {
             videoPlayer.src = data.videoUrl;
             videoPlayer.play();
 
-            // Set description (no TTS button)
             const descText = document.getElementById('descriptionText');
+            descText.textContent = movieDescriptions[movieId] || "No description available.";
 
-            if (movieDescriptions[movieId]) {
-                descText.textContent = movieDescriptions[movieId];
-            } else {
-                descText.textContent = '';
-            }
-
+            const ttsButton = document.getElementById('ttsButton');
+            ttsButton.style.display = 'inline-block'; // make sure it is visible
+            ttsButton.onclick = () => {
+                const utterance = new SpeechSynthesisUtterance(descText.textContent);
+                utterance.rate = 1; // speed
+                utterance.pitch = 1; // pitch
+                speechSynthesis.speak(utterance);
+            };
         }
     } catch (error) {
         alert('Error loading video: ' + error.message);
@@ -200,39 +202,18 @@ async function playMovie(movieId) {
 // }
 
 async function requestTTS() {
-    if (!currentMovieId || !movieDescriptions[currentMovieId]) {
+    if (!movieId || !movieDescriptions[movieId]) {
         alert("No description available.");
         return;
     }
 
-    const textToSpeak = movieDescriptions[currentMovieId];
+    const text = movieDescriptions[movieId];
 
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                action: "tts",
-                text: textToSpeak
-            })
-        });
-
-        const result = await response.json();
-        const data = result.body ? JSON.parse(result.body) : result;
-
-        if (!data.audioUrl) {
-            alert("Could not generate TTS audio.");
-            return;
-        }
-
-        // Play audio
-        const audio = new Audio(data.audioUrl);
-        audio.play();
-
-    } catch (err) {
-        console.error(err);
-        alert("TTS Request Failed");
-    }
+    // Use browser's TTS
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;  // speed
+    utterance.pitch = 1; // pitch
+    speechSynthesis.speak(utterance)
 }
 
 
